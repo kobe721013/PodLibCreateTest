@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Photos
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -16,6 +16,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        //MARK: APP启动时候，判断用户是否授权使用相册
+        if (PHPhotoLibrary.authorizationStatus() == .notDetermined) {
+            PHPhotoLibrary.requestAuthorization({ (firstStatus) in
+                let result = (firstStatus == .authorized)
+                if result {
+                    print("允许APP访问相册")
+                } else {
+                    print("拒绝APP访问相册")
+                }
+            })
+        }
+
+       
         return true
     }
 

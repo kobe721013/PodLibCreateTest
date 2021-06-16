@@ -11,7 +11,7 @@ import Photos
 
 
 
-class KrNrSlideView: UIView {
+public class KrNrSlideView: UIView {
     
     //test image
     var fileNames = ["no1.png", "no2.jpg", "no3.jpg", "no4.jpg", "no5.jpg"]
@@ -33,7 +33,7 @@ class KrNrSlideView: UIView {
     var nextIndex = 150//41
     var windowWidth = 10
     let sideSpace:CGFloat = 10.0
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         
         print("init BannerView frame=\(frame)")
@@ -43,7 +43,15 @@ class KrNrSlideView: UIView {
         let status = PHPhotoLibrary.authorizationStatus()
         if status == .notDetermined  {
             PHPhotoLibrary.requestAuthorization({status in
-                self.fetchAssets()
+                
+                let result = (status == .authorized)
+                if result {
+                    print("OK, get photo permission")
+                    self.fetchAssets()
+                } else {
+                    print("NO. no photo permission")
+                }
+                
             })
         }
         else{
@@ -51,6 +59,21 @@ class KrNrSlideView: UIView {
         }
         
         setUpUI()
+    }
+    //viewStart
+    var draggingStart = false
+    var beginDraggingOffset:CGFloat = 0.0
+    var currentIndex=0
+    
+    private func setUpUI() {
+        print("setUpUI() start >>> frame=\(frame)")
+        //give a default value, real size will update after viewWillLayoytSubviews(call update frame method)
+        scrollView.frame = CGRect(x: -sideSpace, y: 0, width: frame.size.width + 2 * sideSpace, height: frame.height)
+        print("scrollView.frame=\(scrollView.frame), superview=\(self.frame)")
+        scrollView.delegate = self
+        self.addSubview(scrollView)
+        scrollView.showsHorizontalScrollIndicator = false
+        print("setUpUI() end   <<<")
     }
     
     func fetchAssets()
@@ -67,6 +90,12 @@ class KrNrSlideView: UIView {
         
         print("total assets count=\(self.assets.count), nextIndex=\(nextIndex)")
         
+        DispatchQueue.main.async {
+            print("main thread run reloadData()")
+            self.reloadData()
+        }
+        
+        print("fetchAssets function done.")
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -83,7 +112,7 @@ class KrNrSlideView: UIView {
     
     
     
-    func reloadData()
+    public func reloadData()
     {
         
         self.numberOfItems = assets.count
@@ -314,21 +343,6 @@ class KrNrSlideView: UIView {
     
     
     
-    //viewStart
-    var draggingStart = false
-    var beginDraggingOffset:CGFloat = 0.0
-    var currentIndex=0
-    
-    private func setUpUI() {
-        print("setUpUI() start >>> frame=\(frame)")
-        //give a default value, real size will update after viewWillLayoytSubviews(call update frame method)
-        scrollView.frame = CGRect(x: -sideSpace, y: 0, width: frame.size.width + 2 * sideSpace, height: frame.height)
-        print("scrollView.frame=\(scrollView.frame), superview=\(self.frame)")
-        scrollView.delegate = self
-        self.addSubview(scrollView)
-        scrollView.showsHorizontalScrollIndicator = false
-        print("setUpUI() end   <<<")
-    }
     
     //ViewWillLayoutSubviews會呼叫這一個function
     public func updateFrame(bounds:CGRect)
@@ -378,27 +392,33 @@ class KrNrSlideView: UIView {
         }
         
     }
+    
+    
+//    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+//            print("BeginDragging scrollView.contentOffset.x=\(scrollView.contentOffset.x)")
+//
+//            draggingStart = true
+//            beginDraggingOffset = scrollView.contentOffset.x
+//
+//            return
+//    }
 }
 
 extension KrNrSlideView : UIScrollViewDelegate
 {
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView)
-    {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         print("BeginDragging scrollView.contentOffset.x=\(scrollView.contentOffset.x)")
-        
+
         draggingStart = true
         beginDraggingOffset = scrollView.contentOffset.x
-        
+
         return
-        
     }
-    
-    
-    
+
     //scrolling
-    func scrollViewDidScroll(_ scrollView: UIScrollView)
+    public func scrollViewDidScroll(_ scrollView: UIScrollView)
     {
-            
+
         if draggingStart
         {
             draggingStart = false
@@ -419,7 +439,7 @@ extension KrNrSlideView : UIScrollViewDelegate
                     let f = Float(currentOffset / scrollView.frame.width)//5400/320=16.875, index17 => index16
                     let i = Int(f)//16
                     print("currentOffset=\(currentOffset), width=\(scrollView.frame.width), f=\(f), i=\(i)")
-                    
+
                     let centerIndex = (windowWidth / 2) + 1//算出當nextIndex到達最後一張時，centerIndex是自哪一個位置(20page, 5windowsize, centerIndex=17)
                     if i < (self.numberOfItems - centerIndex)
                     {
@@ -447,7 +467,7 @@ extension KrNrSlideView : UIScrollViewDelegate
                     let f = Float(currentOffset / scrollView.frame.width)
                     let i = ceil(f)//無條件進位
                     print("currentOffset=\(currentOffset), width=\(scrollView.frame.width), f=\(f), i=\(i)")
-                    
+
                     let centerIndex = windowWidth / 2
                     if Int(i) > centerIndex
                     {
@@ -459,7 +479,7 @@ extension KrNrSlideView : UIScrollViewDelegate
                         print("boat ANCHOR no need to move...")
                     }
                 }
-            
+
            }
            else
            {
@@ -471,13 +491,13 @@ extension KrNrSlideView : UIScrollViewDelegate
             //print("scrolling...offset=\(scrollView.contentOffset.x)")
         }
     }
-  
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+
         print("scrollViewDidEndDecelerating...contentOffset=\(scrollView.contentOffset)")
-        
+
         let currentPage:Int = Int (scrollView.contentOffset.x / scrollView.frame.size.width)
-        
+
         currentIndex = currentPage
         print("current Page=\(currentPage)")
         print("=====")
@@ -486,26 +506,22 @@ extension KrNrSlideView : UIScrollViewDelegate
             print("index=\(item.tag), frame=\(item.frame)")
         }
     }
+
     
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
-    {
-        //print("scrollViewWillEndDragging...contentOffset=\(self.scrollView.contentOffset)")
-    }
-    
-    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView)
-    {
-        //print("scrollViewWillBeginDecelerating...contentOffset=\(self.scrollView.contentOffset)")
-    }
-    
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) // called when setContentOffset/scrollRectVisible:animated: finishes. not called if not animating
-    {
-        
-    }
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool)
-    {
-        //print("scrollViewDidEndDragging...contentOffset=\(self.scrollView.contentOffset)")
-    }
-    
-    
+//    public func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView)
+//    {
+//        //print("scrollViewWillBeginDecelerating...contentOffset=\(self.scrollView.contentOffset)")
+//    }
+//
+//    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) // called when setContentOffset/scrollRectVisible:animated: finishes. not called if not animating
+//    {
+//
+//    }
+//
+//    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool)
+//    {
+//        //print("scrollViewDidEndDragging...contentOffset=\(self.scrollView.contentOffset)")
+//    }
+
+
 }
