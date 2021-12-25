@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'PodLibCreateTest'
-  s.version          = '1.0.5'
+  s.version          = '1.0.6'
   s.summary          = 'A short description of PodLibCreateTest.'
 
 # This description is used to generate tags and improve search results.
@@ -30,7 +30,7 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '9.0'
 
-  s.source_files = 'PodLibCreateTest/Sources/*.swift'
+  s.source_files = 'PodLibCreateTest/Sources/*'
   
   # s.resource_bundles = {
   #   'PodLibCreateTest' => ['PodLibCreateTest/Assets/*.png']
