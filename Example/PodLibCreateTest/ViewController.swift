@@ -11,10 +11,17 @@ import PodLibCreateTest
 
 class ViewController: UIViewController {
 
-    private var krnrSlideView:KrNrSlideView!
+    
+    @IBAction func buttonClick(_ sender: Any) {
+        let vc = ImageViewController()
+        vc.view.frame = view.frame
+        present(vc, animated: true, completion: nil)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpUI()
+        //setUpUI()
+        
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -26,19 +33,6 @@ class ViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         
         print("(ViewController)-viewWillLayoutSubviews: current bound=\(view.bounds)")
-        krnrSlideView.updateFrame(bounds: view.bounds)
-    }
-    
-    
-    
-    private func setUpUI() {
-        self.view.backgroundColor = #colorLiteral(red: 0.1725490196, green: 0.2431372549, blue: 0.3137254902, alpha: 1)
-        
-        krnrSlideView = KrNrSlideView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
-        self.view.addSubview(krnrSlideView)
-       
-        //bannerView.backgroundColor = UIColor.green
-       // krnrSlideView.reloadData()
     }
     
 }
