@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'PodLibCreateTest'
-  s.version          = '1.0.8'
+  s.version          = '1.0.11'
   s.summary          = 'A short description of PodLibCreateTest.'
 
 # This description is used to generate tags and improve search results.
@@ -32,9 +32,9 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'PodLibCreateTest/**/*'
   
-  # s.resource_bundles = {
-  #   'PodLibCreateTest' => ['PodLibCreateTest/Assets/*.png']
-  # }
+   s.resource_bundle = {
+     'PodLibCreateTest' => ['PodLibCreateTest/Sources/Resources/*.xcassets']
+   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
